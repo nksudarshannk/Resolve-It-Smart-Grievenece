@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Complaint - ResolveIT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .search-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        
+        .search-box h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .search-input-group {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .search-input-group input {
+            flex: 1;
+            padding: 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .search-input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-btn {
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        
+        .result-container {
+            display: none;
+        }
+        
+        .result-container.active {
+            display: block;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        
+        .info-card h3 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .info-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .info-item strong {
+            display: block;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .info-item span {
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.95em !important;
+        }
+        
+        .status-NEW {
+            background: #3498db;
+            color: white;
+        }
+        
+        .status-UNDER_REVIEW {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .status-RESOLVED {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        /* MILESTONE 2: Timeline Styles */
+        .timeline-container {
+            position: relative;
+            padding-left: 50px;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 25px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -38px;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 4px solid #667eea;
+            border-radius: 50%;
+            z-index: 2;
+        }
+        
+        .timeline-dot.active {
+            background: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
+        }
+        
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .timeline-status {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+        }
+        
+        .timeline-date {
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        .timeline-comment {
+            color: #666;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+        
+        .timeline-user {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 8px;
+            font-size: 0.95em;
+        }
+        
+        .description-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .description-section h4 {
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .description-section p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .media-section {
+            margin-top: 20px;
+        }
+        
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .media-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .media-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .media-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .media-name {
+            font-size: 0.85em;
+            color: #666;
+            word-break: break-all;
+        }
+        
+        .error-message {
+            background: #ff4757;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+        }
+        
+        .error-message.active {
+            display: block;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            padding: 12px 30px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .back-link a:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-input-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Track Your Complaint</h1>
+            <p>Enter your complaint ID to view real-time status and timeline</p>
+        </div>
+        
+        <div class="search-box">
+            <h2>Enter Complaint ID</h2>
+            <div class="search-input-group">
+                <input type="text" id="trackingId" placeholder="e.g., CMP-2025-001" onkeypress="handleEnter(event)">
+                <button class="search-btn" onclick="trackComplaint()">🔎 Track Status</button>
+            </div>
+        </div>
+        
+        <div class="error-message" id="errorMessage">
+            ❌ Complaint not found. Please check your ID and try again.
+        </div>
+        
+        <div class="result-container" id="resultContainer">
+            <!-- Complaint Information -->
+            <div class="info-card">
+                <h3>📋 Complaint Details</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Complaint ID</strong>
+                        <span id="complaintId"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Current Status</strong>
+                        <span id="currentStatus"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Category</strong>
+                        <span id="category"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Urgency</strong>
+                        <span id="urgency"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Submitted On</strong>
+                        <span id="submittedAt"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Last Updated</strong>
+                        <span id="lastUpdated"></span>
+                    </div>
+                </div>
+                
+                <div class="description-section">
+                    <h4>Subject: <span id="subject"></span></h4>
+                    <p id="description"></p>
+                </div>
+                
+                <!-- MILESTONE 1: Media Uploads -->
+                <div class="media-section" id="mediaSection" style="display: none;">
+                    <h4 style="color: #333; margin-bottom: 10px;">📎 Attachments</h4>
+                    <div class="media-grid" id="mediaGrid"></div>
+                </div>
+            </div>
+            
+            <!-- MILESTONE 2: Status Timeline -->
+            <div class="info-card">
+                <h3>📅 Status Timeline</h3>
+                <div class="timeline-container" id="timeline">
+                    <!-- Timeline items will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="back-link">
+            <a href="user-portal.html">← Submit New Complaint</a>
+            <a href="index.html" style="margin-left: 15px;">🏠 Home</a>
+        </div>
+    </div>
+    
+    <script>
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                trackComplaint();
+            }
+        }
+        
+        async function trackComplaint() {
+            const trackingId = document.getElementById('trackingId').value.trim();
+            
+            if (!trackingId) {
+                alert('Please enter a complaint ID');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`http://localhost:8080/api/complaints/track/${trackingId}`);
+                
+                if (!response.ok) {
+                    showError();
+                    return;
+                }
+                
+                const complaint = await response.json();
+                displayComplaintDetails(complaint);
+                await loadStatusTimeline(complaint.id);
+                await loadMediaFiles(complaint.id);
+                
+                document.getElementById('errorMessage').classList.remove('active');
+                document.getElementById('resultContainer').classList.add('active');
+            } catch (error) {
+                console.error('Error:', error);
+                showError();
+            }
+        }
+        
+        function showError() {
+            document.getElementById('errorMessage').classList.add('active');
+            document.getElementById('resultContainer').classList.remove('active');
+        }
+        
+        function displayComplaintDetails(complaint) {
+            document.getElementById('complaintId').textContent = complaint.complaintId;
+            document.getElementById('subject').textContent = complaint.subject;
+            document.getElementById('category').textContent = complaint.category;
+            document.getElementById('urgency').textContent = complaint.urgency;
+            document.getElementById('description').textContent = complaint.description;
+            document.getElementById('submittedAt').textContent = formatDate(complaint.submittedAt);
+            document.getElementById('lastUpdated').textContent = formatDate(complaint.lastUpdatedAt);
+            
+            const statusBadge = document.getElementById('currentStatus');
+            statusBadge.textContent = complaint.status.replace('_', ' ');
+            statusBadge.className = `status-badge status-${complaint.status}`;
+        }
+        
+        // MILESTONE 2: Load and display status timeline
+        async function loadStatusTimeline(complaintId) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/complaints/${complaintId}/timeline`);
+                const timeline = await response.json();
+                
+                const timelineContainer = document.getElementById('timeline');
+                timelineContainer.innerHTML = '<div class="timeline-line"></div>';
+                
+                timeline.forEach((item, index) => {
+                    const isLatest = index === 0;
+                    const timelineItem = createTimelineItem(item, isLatest);
+                    timelineContainer.innerHTML += timelineItem;
+                });
+            } catch (error) {
+                console.error('Error loading timeline:', error);
+                document.getElementById('timeline').innerHTML = '<p style="color: #999;">Timeline information not available</p>';
+            }
+        }
+        
+        function createTimelineItem(item, isLatest) {
+            return `
+                <div class="timeline-item">
+                    <div class="timeline-dot ${isLatest ? 'active' : ''}"></div>
+                    <div class="timeline-header">
+                        <span class="timeline-status">${item.status.replace('_', ' ')}</span>
+                        <span class="timeline-date">${formatDateTime(item.updatedAt)}</span>
+                    </div>
+                    ${item.comment ? `<div class="timeline-comment">${item.comment}</div>` : ''}
+                    <div class="timeline-user">Updated by: ${item.updatedBy}</div>
+                </div>
+            `;
+        }
+        
+        // MILESTONE 1: Load media files
+        async function loadMediaFiles(complaintId) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/complaints/${complaintId}/media`);
+                const mediaFiles = await response.json();
+                
+                if (mediaFiles && mediaFiles.length > 0) {
+                    const mediaSection = document.getElementById('mediaSection');
+                    const mediaGrid = document.getElementById('mediaGrid');
+                    mediaSection.style.display = 'block';
+                    
+                    mediaGrid.innerHTML = mediaFiles.map(media => {
+                        const icon = getFileIcon(media.fileType);
+                        return `
+                            <div class="media-item" onclick="downloadMedia(${media.id})">
+                                <div class="media-icon">${icon}</div>
+                                <div class="media-name">${media.fileName}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Error loading media files:', error);
+            }
+        }
+        
+        function getFileIcon(fileType) {
+            switch (fileType) {
+                case 'IMAGE': return '🖼️';
+                case 'VIDEO': return '🎥';
+                case 'DOCUMENT': return '📄';
+                default: return '📎';
+            }
+        }
+        
+        function downloadMedia(mediaId) {
+            window.open(`http://localhost:8080/api/complaints/media/${mediaId}/download`, '_blank');
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Track Complaint - ResolveIT</title>
+    <meta http-equiv="refresh" content="0; url=track-complaint.html">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .redirect-message {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { font-size: 2em; margin-bottom: 20px; }
+        p { font-size: 1.1em; }
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="redirect-message">
+        <h1>🔍 Track Your Complaint</h1>
+        <p>Redirecting to tracking page...</p>
+        <div class="spinner"></div>
+        <p style="font-size: 0.9em; margin-top: 20px;">
+            If not redirected, <a href="track-complaint.html" style="color: white; font-weight: bold;">click here</a>
+        </p>
+    </div>
+    <script>
+        window.location.href = 'track-complaint.html';
+    </script>
+</body>
+</html>
+
+<div class="track-container">
+    
+    <a href="index.html" class="back-btn">← Back to Home</a>
+
+    <h2>Track Your Complaint</h2>
+    <p class="tagline">Enter your complaint ID to view status and timeline</p>
+
+    <div class="track-search">
+        <input type="text" id="trackingId" placeholder="Enter Complaint ID (e.g., CMP-2025-001)">
+        <button onclick="trackComplaint()" class="btn-primary">Track</button>
+    </div>
+
+    <div id="trackResult" class="track-result" style="display: none;">
+        
+        <!-- Complaint Info -->
+        <div class="track-info-card">
+            <h3>Complaint Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Complaint ID:</strong>
+                    <span id="trackComplaintId"></span>
+                </div>
+                <div class="info-item">
+                    <strong>Current Status:</strong>
+                    <span id="trackStatus" class="status-badge"></span>
+                </div>
+                <div class="info-item">
+                    <strong>Subject:</strong>
+                    <span id="trackSubject"></span>
+                </div>
+                <div class="info-item">
+                    <strong>Category:</strong>
+                    <span id="trackCategory"></span>
+                </div>
+                <div class="info-item">
+                    <strong>Urgency:</strong>
+                    <span id="trackUrgency"></span>
+                </div>
+                <div class="info-item">
+                    <strong>Submitted On:</strong>
+                    <span id="trackSubmitted"></span>
+                </div>
+                <div class="info-item full-width">
+                    <strong>Description:</strong>
+                    <p id="trackDescription"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Flow Visualization -->
+        <div class="status-flow">
+            <h3>Status Progress</h3>
+            <div class="flow-steps">
+                <div class="flow-step" id="step-NEW">
+                    <div class="flow-circle">1</div>
+                    <div class="flow-label">New</div>
+                </div>
+                <div class="flow-line"></div>
+                <div class="flow-step" id="step-UNDER_REVIEW">
+                    <div class="flow-circle">2</div>
+                    <div class="flow-label">Under Review</div>
+                </div>
+                <div class="flow-line"></div>
+                <div class="flow-step" id="step-RESOLVED">
+                    <div class="flow-circle">3</div>
+                    <div class="flow-label">Resolved</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-card">
+            <h3>📅 Timeline of Updates</h3>
+            <div id="trackTimeline" class="timeline">
+                <p style="text-align: center; color: #888;">Loading timeline...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="trackError" class="error-message" style="display: none;">
+        <p>❌ Complaint not found. Please check your Complaint ID and try again.</p>
+    </div>
+
+</div>
+
+<script src="track.js"></script>
+</body>
+</html>

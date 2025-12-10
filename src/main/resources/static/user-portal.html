@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResolveIT - User Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .mode-selector {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .mode-selector h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .mode-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            min-width: 250px;
+            padding: 30px;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .mode-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .mode-btn h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .mode-btn p {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .form-container.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .file-upload {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .file-upload input {
+            display: none;
+        }
+        
+        .file-upload-text {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .file-list {
+            margin-top: 15px;
+            text-align: left;
+        }
+        
+        .file-item {
+            background: #f5f5f5;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-item button {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .success-message {
+            background: #2ecc71;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+        
+        .success-message.active {
+            display: block;
+        }
+        
+        .tracking-id {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .mode-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        .login-section {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+            margin: 0 auto;
+            display: none;
+        }
+        
+        .login-section.active {
+            display: block;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 ResolveIT</h1>
+            <p>Smart Grievance Redressal Platform</p>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            <h2>✅ Complaint Submitted Successfully!</h2>
+            <div class="tracking-id" id="trackingId"></div>
+            <p>Please save this ID to track your complaint status</p>
+            <button class="submit-btn" onclick="resetForm()">Submit Another Complaint</button>
+        </div>
+        
+        <!-- MILESTONE 1: Mode Selection -->
+        <div class="mode-selector" id="modeSelector">
+            <h2>Choose Submission Mode</h2>
+            <div class="mode-buttons">
+                <div class="mode-btn" onclick="selectMode('anonymous')">
+                    <h3>🕶️ Anonymous</h3>
+                    <p>Submit without revealing your identity</p>
+                    <p style="margin-top: 10px; font-size: 0.85em;">✓ Complete privacy<br>✓ No registration needed<br>✓ Track with complaint ID</p>
+                </div>
+                <div class="mode-btn" onclick="selectMode('registered')">
+                    <h3>👤 Registered User</h3>
+                    <p>Login or register to submit</p>
+                    <p style="margin-top: 10px; font-size: 0.85em;">✓ Track all complaints<br>✓ Email notifications<br>✓ Priority support</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MILESTONE 1: Login/Register Section -->
+        <div class="login-section" id="loginSection">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('login')">Login</button>
+                <button class="tab" onclick="showTab('register')">Register</button>
+            </div>
+            
+            <div id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+                <button class="submit-btn" onclick="loginUser()">Login</button>
+                <p style="text-align: center; margin-top: 15px; color: #666;">
+                    <a href="#" onclick="selectMode('anonymous'); return false;" style="color: #667eea;">Submit anonymously instead</a>
+                </p>
+            </div>
+            
+            <div id="registerForm" style="display: none;">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Create a password">
+                </div>
+                <div class="form-group">
+                    <label>User Type</label>
+                    <select id="regRole">
+                        <option value="CITIZEN">Citizen</option>
+                        <option value="STUDENT">Student</option>
+                        <option value="EMPLOYEE">Employee</option>
+                        <option value="CUSTOMER">Customer</option>
+                    </select>
+                </div>
+                <button class="submit-btn" onclick="registerUser()">Register</button>
+            </div>
+        </div>
+        
+        <!-- MILESTONE 1: Complaint Form -->
+        <div class="form-container" id="complaintForm">
+            <h2 style="margin-bottom: 30px; color: #333; text-align: center;">Submit Your Complaint</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Your Name <span id="nameOptional">(Optional for anonymous)</span></label>
+                    <input type="text" id="name" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label>Email <span id="emailOptional">(Optional for anonymous)</span></label>
+                    <input type="email" id="email" placeholder="Enter your email">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Phone <span style="color: #999;">(Optional)</span></label>
+                    <input type="tel" id="phone" placeholder="Enter your phone number">
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="category" required>
+                        <option value="">Select Category</option>
+                        <option value="Infrastructure">Infrastructure</option>
+                        <option value="Service">Service Quality</option>
+                        <option value="Staff">Staff Behavior</option>
+                        <option value="Financial">Financial</option>
+                        <option value="Safety">Safety & Security</option>
+                        <option value="Cleanliness">Cleanliness</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Urgency Level *</label>
+                    <select id="urgency" required>
+                        <option value="">Select Urgency</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Subject *</label>
+                    <input type="text" id="subject" placeholder="Brief subject" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Description *</label>
+                <textarea id="description" placeholder="Describe your complaint in detail..." required></textarea>
+            </div>
+            
+            <!-- MILESTONE 1: File Upload -->
+            <div class="form-group">
+                <label>Attachments (Images/Documents)</label>
+                <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" multiple accept="image/*,.pdf,.doc,.docx" onchange="handleFileSelect(event)">
+                    <div class="file-upload-text">📎 Click to upload supporting files</div>
+                    <p style="color: #999; font-size: 0.9em;">Max 5 files, up to 10MB each</p>
+                </div>
+                <div class="file-list" id="fileList"></div>
+            </div>
+            
+            <button class="submit-btn" onclick="submitComplaint()">Submit Complaint</button>
+            <p style="text-align: center; margin-top: 15px; color: #666;">
+                <a href="track.html" style="color: #667eea;">Track existing complaint</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        let selectedMode = '';
+        let selectedFiles = [];
+        let currentUser = null;
+        
+        function selectMode(mode) {
+            selectedMode = mode;
+            document.getElementById('modeSelector').style.display = 'none';
+            
+            if (mode === 'anonymous') {
+                document.getElementById('complaintForm').classList.add('active');
+                document.getElementById('nameOptional').style.display = 'inline';
+                document.getElementById('emailOptional').style.display = 'inline';
+            } else {
+                // Check if user is already logged in
+                const storedUser = sessionStorage.getItem('user');
+                if (storedUser) {
+                    currentUser = JSON.parse(storedUser);
+                    showComplaintFormForUser();
+                } else {
+                    document.getElementById('loginSection').classList.add('active');
+                }
+            }
+        }
+        
+        function showTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'login') {
+                tabs[0].classList.add('active');
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+            }
+        }
+        
+        async function registerUser() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const role = document.getElementById('regRole').value;
+            
+            if (!name || !email || !password) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/users/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({name, email, password, role})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Registration successful! Please login.');
+                    showTab('login');
+                } else {
+                    alert(data.message || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Registration failed. Please try again.');
+            }
+        }
+        
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                alert('Please enter email and password');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/users/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email, password})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentUser = data.user;
+                    sessionStorage.setItem('user', JSON.stringify(currentUser));
+                    showComplaintFormForUser();
+                } else {
+                    alert(data.message || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Login failed. Please try again.');
+            }
+        }
+        
+        function showComplaintFormForUser() {
+            document.getElementById('loginSection').classList.remove('active');
+            document.getElementById('complaintForm').classList.add('active');
+            
+            // Pre-fill user details
+            document.getElementById('name').value = currentUser.name;
+            document.getElementById('email').value = currentUser.email;
+            document.getElementById('name').readOnly = true;
+            document.getElementById('email').readOnly = true;
+            document.getElementById('nameOptional').style.display = 'none';
+            document.getElementById('emailOptional').style.display = 'none';
+        }
+        
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            
+            files.forEach(file => {
+                if (selectedFiles.length >= 5) {
+                    alert('Maximum 5 files allowed');
+                    return;
+                }
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`File ${file.name} is too large. Max size is 10MB`);
+                    return;
+                }
+                
+                selectedFiles.push(file);
+            });
+            
+            displayFileList();
+        }
+        
+        function displayFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>${file.name} (${(file.size / 1024).toFixed(2)} KB)</span>
+                    <button onclick="removeFile(${index})">Remove</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+        
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            displayFileList();
+        }
+        
+        async function submitComplaint() {
+            const category = document.getElementById('category').value;
+            const urgency = document.getElementById('urgency').value;
+            const subject = document.getElementById('subject').value;
+            const description = document.getElementById('description').value;
+            
+            if (!category || !urgency || !subject || !description) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            const complaintData = {
+                name: document.getElementById('name').value || 'Anonymous',
+                email: document.getElementById('email').value || '',
+                phone: document.getElementById('phone').value || '',
+                category,
+                urgency,
+                subject,
+                description,
+                anonymous: selectedMode === 'anonymous',
+                user: currentUser ? {id: currentUser.id} : null
+            };
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/complaints', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(complaintData)
+                });
+                
+                const result = await response.json();
+                
+                if (result && result.complaintId) {
+                    // Upload files if any
+                    if (selectedFiles.length > 0) {
+                        await uploadFiles(result.id);
+                    }
+                    
+                    document.getElementById('trackingId').textContent = `Your Complaint ID: ${result.complaintId}`;
+                    document.getElementById('complaintForm').classList.remove('active');
+                    document.getElementById('successMessage').classList.add('active');
+                } else {
+                    alert('Failed to submit complaint. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to submit complaint. Please try again.');
+            }
+        }
+        
+        async function uploadFiles(complaintId) {
+            for (const file of selectedFiles) {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    await fetch(`http://localhost:8080/api/complaints/${complaintId}/upload`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                }
+            }
+        }
+        
+        function resetForm() {
+            document.getElementById('successMessage').classList.remove('active');
+            document.getElementById('modeSelector').style.display = 'block';
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.type !== 'file') el.value = '';
+            });
+            selectedFiles = [];
+            displayFileList();
+        }
+    </script>
+</body>
+</html>
